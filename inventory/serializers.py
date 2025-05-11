@@ -56,3 +56,11 @@ class WeeklyConsumptionReportSerializer(serializers.ModelSerializer):
             'quantity_used', 'observation'
         ]
         read_only_fields = ['observation']
+
+class WeeklyReportExcelUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+    def validate_file(self, file):
+        if not file.name.endswith('.xlsx'):
+            raise serializers.ValidationError("Only .xlsx files are accepted.")
+        return file
