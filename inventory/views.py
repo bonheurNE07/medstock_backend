@@ -3,8 +3,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import viewsets, filters, status
 from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import AllowAny
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.dateparse import parse_date
+from django.db.models import Sum, F, Q
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+from io import BytesIO
+from datetime import datetime
 from .models import MedicalCenter, Medicine, Stock, MedicineReceipt, WeeklyConsumptionReport
 from .serializers import (
     MedicalCenterSerializer, MedicineSerializer, StockSerializer,
@@ -48,6 +55,8 @@ class WeeklyConsumptionReportViewSet(viewsets.ModelViewSet):
     search_fields = ['medicine__name']
 
 class WeeklyReportExcelUploadView(APIView):
+    permission_classes = [AllowAny] 
+
     def post(self, request):
         serializer = WeeklyReportExcelUploadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -87,6 +96,7 @@ class WeeklyReportExcelUploadView(APIView):
 
 class MedicineReceiptExcelUploadView(APIView):
     parser_classes = [MultiPartParser]
+    permission_classes = [AllowAny] 
 
     def post(self, request, *args, **kwargs):
         file_obj = request.FILES.get('file')
@@ -128,3 +138,112 @@ class MedicineReceiptExcelUploadView(APIView):
                 return Response({"error": f"Error processing row: {row.to_dict()}. Details: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": f"Successfully created {len(receipts_created)} medicine receipts."}, status=status.HTTP_201_CREATED)
+    
+class WeeklyReportExcelExportView(APIView):
+    permission_classes = [AllowAny] 
+    def get(self, request, *args, **kwargs):
+        # Parse query params
+        start_date = parse_date(str(request.query_params.get('start')))
+        end_date = parse_date(str(request.query_params.get('end')))
+        # Base queryset
+        reports = WeeklyConsumptionReport.objects.select_related('medicine', 'center')
+
+        # Apply date filtering if provided
+        if start_date and end_date:
+            reports = reports.filter(week_start__gte=start_date, week_end__lte=end_date)
+
+        reports = reports.order_by('-week_start')
+
+        # Create workbook and sheet
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Weekly Consumption Report"
+
+        # Add title
+        ws.merge_cells("A1:H1")
+        ws["A1"] = f"Weekly Medicine Consumption Report - Generated {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+        ws["A1"].style = "Title"
+
+        # Define headers
+        headers = [
+            "Semaine du", "Semaine au", "Centre médical", "Nom du Médicament",
+            "Unité", "Quantité Consommée", "Observation"
+        ]
+        ws.append(headers)
+
+        # Add data
+        for report in reports:
+            ws.append([
+                report.week_start.strftime('%Y-%m-%d'),
+                report.week_end.strftime('%Y-%m-%d'),
+                report.center.name,
+                report.medicine.name,
+                report.medicine.unit,
+                report.quantity_used,
+                report.observation
+            ])
+
+        # Auto-adjust column widths
+        for i, col in enumerate(ws.columns, start=1):
+            max_length = max(len(str(cell.value)) if cell.value else 0 for cell in col)
+            ws.column_dimensions[get_column_letter(i)].width = max_length + 2
+
+        # Save to memory
+        excel_file = BytesIO()
+        wb.save(excel_file)
+        excel_file.seek(0)
+
+        # Return response
+        filename = f"Weekly_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        response = HttpResponse(
+            excel_file,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    
+class DashboardAnalyticsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        total_medicines = Medicine.objects.count()
+        total_centers = MedicalCenter.objects.count()
+
+        total_stock_quantity = Stock.objects.aggregate(total=Sum('quantity'))['total'] or 0
+
+        # Weekly consumption per medicine (last 7 days range, customizable)
+        weekly_data = (
+            WeeklyConsumptionReport.objects
+            .values(medicine_name=F('medicine__name'))
+            .annotate(total_used=Sum('quantity_used'))
+            .order_by('-total_used')
+        )
+
+        # Stock per center (optional breakdown)
+        stock_per_center = (
+            Stock.objects
+            .values(center_name=F('center__name'))
+            .annotate(total_quantity=Sum('quantity'))
+            .order_by('center_name')
+        )
+
+        # Low stock alerts
+        low_stock_qs = (
+            Stock.objects
+            .filter(Q(quantity__lte=10))
+            .values(
+                'center__name', 
+                'medicine__name', 
+                'quantity'
+            )
+            .order_by('quantity')
+        )
+
+        return Response({
+            "total_medicines": total_medicines,
+            "total_centers": total_centers,
+            "total_stock_quantity": total_stock_quantity,
+            "weekly_consumption": list(weekly_data),
+            "stock_per_center": list(stock_per_center),
+            "low_stock_alerts": list(low_stock_qs),
+        })
