@@ -1,15 +1,21 @@
 services:
   - type: web
     name: medstock-backend
-    runtime: python
-    region: frankfurt 
-    buildCommand: pip install -r requirements.txt
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
     startCommand: gunicorn medstock_backend.wsgi:application --log-file -
-    envVars:
-      - key: DJANGO_SECRET_KEY
-        value: django-insecure-ltjzhviyf7d6tl(8gi-$g9z65r2r$&j!0^+ux$4r-t@kl4z)bo
-      - key: DEBUG
-        value: False
-      - key: DATABASE_URL
-        value: postgresql://postgres:bonheurBNE37@db.qmhvpgnleecgqmsrcxkc.supabase.co:5432/postgres
     autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+    plan: free
+
+    # Run migrations after deploy
+    postDeployCommand: |
+      python manage.py migrate
+      python manage.py collectstatic --noinput
