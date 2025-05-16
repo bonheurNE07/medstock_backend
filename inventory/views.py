@@ -71,10 +71,6 @@ class WeeklyReportExcelUploadView(APIView):
         file = serializer.validated_data['file']
 
         df = pd.read_excel(file)
-        print("Columns in DataFrame:", df.columns)
-        print("=======================================")
-        print(df['Centre médical'])
-
         required_columns = ['Date de début de semaine', 'Date de fin de semaine', 'Centre médical', 'Médicament', 'Quantité utilisée']
         if not all(col in df.columns for col in required_columns):
             return Response({"error": "Excel file must contain these columns: " + ", ".join(required_columns)}, status=status.HTTP_400_BAD_REQUEST)
@@ -97,8 +93,6 @@ class WeeklyReportExcelUploadView(APIView):
                 except MedicalCenter.DoesNotExist:
                     errors.append({"row": idx + 2, "error": f"MedicalCenter '{row['Centre médical']}' does not exist"})
                     continue
-                print("===============================================")
-                print(f"Found center: {center.name}")
 
                 medicine_name = str(row['Médicament']).strip().replace('\u00a0', ' ')
                 try:
@@ -117,7 +111,6 @@ class WeeklyReportExcelUploadView(APIView):
                 )
                 success_count += 1
             except Exception as e:
-                print(f"Error on row {idx + 1}: {e}")
                 errors.append({"row": idx + 2, "error": str(e)})
 
         return Response({
@@ -136,8 +129,6 @@ class MedicineReceiptExcelUploadView(APIView):
 
         try:
             df = pd.read_excel(file_obj)
-            print("=====================================")
-            print(df.head())
         except Exception as e:
             return Response({"error": f"Invalid Excel file. Details: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -164,7 +155,6 @@ class MedicineReceiptExcelUploadView(APIView):
                 try:
                     center = MedicalCenter.objects.get(name=center_name)
                 except center.DoesNotExist:
-                    print("does not exists center")
                     center = MedicalCenter.objects.create(name=center_name)
 
                 medicine, _ = Medicine.objects.get_or_create(name=medicine_name, defaults={'unit': unit})
