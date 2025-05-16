@@ -13,11 +13,11 @@ router.register(r'centers', MedicalCenterViewSet)
 router.register(r'medicines', MedicineViewSet)
 router.register(r'stocks', StockViewSet)
 router.register(r'receipts', MedicineReceiptViewSet)
-router.register(r'weekly-reports', WeeklyConsumptionReportViewSet)
+router.register(r'weekly/reports', WeeklyConsumptionReportViewSet)
 
 urlpatterns = router.urls + [
-    path('reports/upload/', WeeklyReportExcelUploadView.as_view(), name='weeklyreport-upload'),
+    path('weekly-excel/reports/upload/', WeeklyReportExcelUploadView.as_view(), name='weeklyreport-upload'),
     path('reports/export/', WeeklyReportExcelExportView.as_view(), name='weeklyreports-export'),
-    path('receipts/upload/', MedicineReceiptExcelUploadView.as_view(), name='receipts'),
+    path('receipts-excel/upload/', MedicineReceiptExcelUploadView.as_view(), name='receipts'),
     path('dashboard/', DashboardAnalyticsView.as_view(), name='dashboard-analytics'),
 ]
