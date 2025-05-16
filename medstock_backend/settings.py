@@ -89,7 +89,7 @@ WSGI_APPLICATION = "medstock_backend.wsgi.application"
 #    }
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://postgres:bonheurBNE37@db.qmhvpgnleecgqmsrcxkc.supabase.co:5432/postgres')
+    'default': dj_database_url.config(default='postgresql://postgres.qmhvpgnleecgqmsrcxkc:bonheurBNE37@aws-0-eu-central-1.pooler.supabase.com:6543/postgres')
 }
 
 
