@@ -22,8 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "django-insecure-ltjzhviyf7d6tl(8gi-$g9z65r2r$&j!0^+ux$4r-t@kl4z)bo"
-SECRET_KEY = config("SECRET_KEY")
+SECRET_KEY = "django-insecure-ltjzhviyf7d6tl(8gi-$g9z65r2r$&j!0^+ux$4r-t@kl4z)bo"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -90,7 +89,7 @@ WSGI_APPLICATION = "medstock_backend.wsgi.application"
 #    }
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600)
+    'default': dj_database_url.config(default='postgresql://meduser:lgMc0Nz5gZR5flnMYye5fnNEMkxKmt76@dpg-d0jqn1l6ubrc73annq30-a/medstock_db_kch8')
 }
 
 
@@ -128,7 +127,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
-    "https://medstock-frontend-zeta.vercel.app/"
+    "https://medstock-frontend-zeta.vercel.app/",
 ]
 
 # Internationalization
