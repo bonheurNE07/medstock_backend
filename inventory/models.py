@@ -156,13 +156,14 @@ def consume_medicine(center, medicine, quantity):
     if quantity > total_available:
         raise ValueError(f"Not enough stock to consume {quantity} units of {medicine}")
     batches = MedicineBatch.objects.filter(center=center, medicine=medicine).order_by("exp_date")
-    remaining = quantity
+    quantity_to_consume = quantity
     for batch in batches:
-        if batch.quantity >= remaining:
-            batch.quantity -= remaining
+        if batch.quantity >= quantity_to_consume:
+            batch.quantity -= quantity_to_consume
             batch.save()
             break
         else:
-            remaining -= batch.quantity
+            quantity_to_consume -= batch.quantity
             batch.quantity = 0
             batch.save()
+            continue

@@ -36,6 +36,11 @@ class MedicineViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)  # bypass pagination
+
 class StockViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     

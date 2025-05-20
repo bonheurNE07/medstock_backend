@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-ltjzhviyf7d6tl(8gi-$g9z65r2r$&j!0^+ux$4r-t@kl4z)bo"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,17 +79,18 @@ WSGI_APPLICATION = "medstock_backend.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-#'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': config('DB_NAME'),
-#        'USER': config('DB_USER'),
-#        'PASSWORD': config('DB_PASSWORD'),
-#        'HOST': config('DB_HOST', default='localhost'),
-#        'PORT': config('DB_PORT', default='5432'),
-#    }
+
+# 'default': dj_database_url.config(default='postgresql://meduser:lgMc0Nz5gZR5flnMYye5fnNEMkxKmt76@dpg-d0jqn1l6ubrc73annq30-a/medstock_db_kch8')
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgresql://meduser:lgMc0Nz5gZR5flnMYye5fnNEMkxKmt76@dpg-d0jqn1l6ubrc73annq30-a/medstock_db_kch8')
+    'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': config('DB_NAME'),
+       'USER': config('DB_USER'),
+       'PASSWORD': config('DB_PASSWORD'),
+       'HOST': config('DB_HOST', default='localhost'),
+       'PORT': config('DB_PORT', default='5432'),
+   } 
 }
 
 
@@ -127,7 +128,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", 
-    "https://medstock-frontend-zeta.vercel.app/",
+    # "https://medstock-frontend-zeta.vercel.app/",
 ]
 
 # Internationalization

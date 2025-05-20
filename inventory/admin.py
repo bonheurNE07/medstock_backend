@@ -49,7 +49,7 @@ class MedicineBatchAdmin(admin.ModelAdmin):
     search_fields = ['center__name', 'medicine__name']
     fieldsets = (
         ("Reception Info", {
-            "fields": ("center", "medicine", "quantity_received", "batch_code")
+            "fields": ("center", "medicine", "quantity", "batch_code")
         }),
         ("Date", {
             "fields": ("received_date","exp_date",),
