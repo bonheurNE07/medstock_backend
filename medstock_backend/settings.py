@@ -140,7 +140,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://100.86.174.80:3000", 
-    "https://685156ab1860d2c7d8b4a939--medstock-manage.netlify.app",
+    "https://medstock-manage.netlify.app",
 ]
 
 # Internationalization
