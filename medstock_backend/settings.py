@@ -87,13 +87,23 @@ WSGI_APPLICATION = "medstock_backend.wsgi.application"
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql',
+       'NAME': "neondb",
+       'USER': "neondb_owner",
+       'PASSWORD': "npg_BWH5KnIxZ1zs",
+       'HOST': "ep-icy-dream-a82dbey5-pooler.eastus2.azure.neon.tech",
+       'PORT': "5432",
+   } 
+}
+""" DATABASES = {
+    'default': {
+       'ENGINE': 'django.db.backends.postgresql',
        'NAME': config('DB_NAME'),
        'USER': config('DB_USER'),
        'PASSWORD': config('DB_PASSWORD'),
        'HOST': config('DB_HOST', default='localhost'),
        'PORT': config('DB_PORT', default='5432'),
    } 
-}
+} """
 
 
 # Password validation
@@ -130,7 +140,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://100.86.174.80:3000", 
-    # "https://medstock-frontend-zeta.vercel.app/",
+    "https://685156ab1860d2c7d8b4a939--medstock-manage.netlify.app",
 ]
 
 # Internationalization
