@@ -7,7 +7,7 @@ class StockFilter(filters.FilterSet):
     endDate = filters.DateFilter(field_name='last_updated', lookup_expr='lte')
     class Meta:
         model = Stock
-        fields = ['center', 'medicine']
+        fields = ['center', 'medicine', 'startDate', 'endDate']
 
 
 class WeeklyConsumptionReportFilter(filters.FilterSet):
