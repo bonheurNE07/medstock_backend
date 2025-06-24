@@ -3,7 +3,8 @@ from .models import Stock, WeeklyConsumptionReport, MedicineReceipt
 
 class StockFilter(filters.FilterSet):
     medicine_name = filters.CharFilter(field_name='medicine__name', lookup_expr='icontains')
-    last_updated = filters.DateFromToRangeFilter()
+    startDate = filters.DateFilter(field_name='last_updated', lookup_expr='gte')
+    endDate = filters.DateFilter(field_name='last_updated', lookup_expr='lte')
     class Meta:
         model = Stock
         fields = ['center', 'medicine']
