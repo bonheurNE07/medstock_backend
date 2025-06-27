@@ -1,7 +1,6 @@
 acres==0.4.1
 aiofiles==24.1.0
 anyio==4.9.0
-asgiref @ file:///C:/b/abs_ae1n0p_8_w/croot/asgiref_1724072476516/work
 beautifulsoup4==4.13.4
 certifi==2025.4.26
 chardet==5.2.0
@@ -18,7 +17,6 @@ dj-database-url==2.3.0
 Django==5.1.5
 django-cors-headers==4.6.0
 django-filter==24.3
-django-restframework==0.0.1
 djangorestframework==3.15.2
 djangorestframework_simplejwt==5.4.0
 drf-yasg==1.21.10
@@ -51,8 +49,6 @@ nibabel==5.3.2
 ninja==1.11.1.1
 nipype==1.10.0
 numpy==2.1.2
-opencv-python==4.10.0.84
-opencv-python-headless==4.10.0.84
 openpyxl==3.1.5
 packaging==24.2
 pandas==2.2.3
@@ -94,14 +90,10 @@ sqlparse==0.5.3
 starlette==0.47.0
 sympy==1.13.1
 tifffile==2024.9.20
-torch==2.5.0
-torchvision==0.20.0
 tqdm==4.67.1
 traits==7.0.2
 typing_extensions==4.13.2
 tzdata==2024.2
-ultralytics==8.3.148
-ultralytics-thop==2.0.14
 uritemplate==4.1.1
 urllib3==2.4.0
 uvicorn==0.34.3
