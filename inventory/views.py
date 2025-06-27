@@ -1,19 +1,22 @@
-import pandas as pd
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import viewsets, filters, status
-from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import AllowAny
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.dateparse import parse_date
 from django.utils.timezone import now, timedelta
 from django.db.models import Sum, F, Value, Max
 from django.db.models.functions import Coalesce, Concat
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import viewsets, filters, status
+from rest_framework.parsers import MultiPartParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
+import pandas as pd
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 from datetime import datetime, date
+
 from .models import MedicalCenter, Medicine, Stock, MedicineReceipt, WeeklyConsumptionReport
 from .serializers import (
     MedicalCenterSerializer, MedicineSerializer, StockSerializer,
@@ -23,13 +26,13 @@ from .serializers import (
 from .filters import StockFilter, WeeklyConsumptionReportFilter, MedicineReceiptFilter
 
 class MedicalCenterViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes =  [IsAuthenticated]
 
     queryset = MedicalCenter.objects.all()
     serializer_class = MedicalCenterSerializer
 
 class MedicineViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     queryset = Medicine.objects.all()
     serializer_class = MedicineSerializer
@@ -42,7 +45,7 @@ class MedicineViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)  # bypass pagination
 
 class StockViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     queryset = Stock.objects.select_related('center', 'medicine').all()
     serializer_class = StockSerializer
@@ -50,7 +53,7 @@ class StockViewSet(viewsets.ModelViewSet):
     filterset_class = StockFilter
 
 class MedicineReceiptViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     queryset = MedicineReceipt.objects.select_related('center', 'medicine').all()
     serializer_class = MedicineReceiptSerializer
@@ -58,8 +61,7 @@ class MedicineReceiptViewSet(viewsets.ModelViewSet):
     filterset_class = MedicineReceiptFilter
 
 class WeeklyConsumptionReportViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
-
+    permission_classes = [IsAuthenticated]
     queryset = WeeklyConsumptionReport.objects.select_related('center', 'medicine').all()
     serializer_class = WeeklyConsumptionReportSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
@@ -67,7 +69,7 @@ class WeeklyConsumptionReportViewSet(viewsets.ModelViewSet):
     search_fields = ['medicine__name']
 
 class WeeklyReportExcelUploadView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
 
     def post(self, request):
@@ -124,7 +126,7 @@ class WeeklyReportExcelUploadView(APIView):
         }, status=status.HTTP_200_OK)
 
 class MedicineReceiptExcelUploadView(APIView):
-    permission_classes = [AllowAny] 
+    permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
 
     def post(self, request, *args, **kwargs):
@@ -180,7 +182,7 @@ class MedicineReceiptExcelUploadView(APIView):
         return Response({"message": f"Successfully created {len(receipts_created)} medicine receipts."}, status=status.HTTP_201_CREATED)
     
 class WeeklyReportExcelExportView(APIView):
-    permission_classes = [AllowAny] 
+    permission_classes = [IsAuthenticated]
     def get(self, request, *args, **kwargs):
         # Parse query params
         start_date = parse_date(str(request.query_params.get('start')))
@@ -243,7 +245,7 @@ class WeeklyReportExcelExportView(APIView):
         return response
 
 class DashboardAnalyticsView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         today = date.today()

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello {{ email }},</h2>
+        <p>Thank you for registering. Your confirmation code is:</p>
+        <p class="code">{{ code }}</p>
+        <p>Please use this code to verify your account.</p>
+        <br>
+        <p>Best regards,<br><strong>Seed Distribution Team</strong></p>
+    </div>
+</body>
+</html>
