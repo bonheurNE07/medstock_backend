@@ -120,6 +120,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "https://medstockapp.netlify.app",
+    "http://localhost:5173"
 ]
 
 # Internationalization
